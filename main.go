@@ -22,9 +22,13 @@ func main() {
 	log.Println("bye")
 }
 
-type Vector mat.VecDense
+type IntersectionPoint struct {
+	distance float64
+	position *mat.VecDense
+	normal *mat.VecDense
+}
 
-//func newVector(data ...float64) *Vector { // error
+// func newVector(data ...float64) *Vector { // error
 func newVector(data ...float64) *mat.VecDense {
 	return mat.NewVecDense(len(data), data)
 }
@@ -33,8 +37,9 @@ func render(size int) {
 	from := newVector(0, 0, -5)
 
 	// Sphere
-	center := newVector(0, 0, 5)
-	radius := 1.0
+	shape := NewSphere(newVector(0, 0, 5), 1.0)
+//	center := newVector(0, 0, 5)
+//	radius := 1.0
 
 	fmt.Printf("P3\n%d %d\n255\n", size, size)
 
@@ -47,15 +52,14 @@ func render(size int) {
 			to.SubVec(screenXYZ, from)
 			to.ScaleVec(1.0/mat.Norm(to, 2), to) // L2距離
 
+			ray := NewRay(from, to)
+
 			/* 交差判定 */
-			v := mat.NewVecDense(3, nil)
-			v.SubVec(center, from) // v = from - center  : カメラから球の中心
 
-			b := mat.Dot(to, v) // b = to.dot(v)
-			c := mat.Dot(v, v) - radius*radius
-			d := b*b - c
+			_ip, ok := shape.testIntersection(ray)
+			log.Print(_ip)
 
-			if d < 0 {
+			if !ok {
 				//				log.Printf("%d %d b:%f c:%f d:%f\n", x, y, b, c, d)
 				fmt.Printf("0 0 200 ")
 			} else {
