@@ -56,8 +56,7 @@ func render(size int) {
 
 			/* 交差判定 */
 
-			_ip, ok := shape.testIntersection(ray)
-			log.Print(_ip)
+			_, ok := shape.testIntersection(ray)
 
 			if !ok {
 				//				log.Printf("%d %d b:%f c:%f d:%f\n", x, y, b, c, d)
