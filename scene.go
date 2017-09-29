@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"math"
 )
 
@@ -63,7 +62,7 @@ func (sc *Scene) rayTrace(ray *Ray, shape Shape) *FColor {
 	if ok {
 		for _, ls := range sc.lightSources {
 			fcolor = FCAdd(fcolor, sc.shadingDiffuse(ip, ls, shape))
-			log.Printf("ip:%v, fc:%v\n", ip, fcolor)
+			//			log.Printf("ip:%v, fc:%v\n", ip, fcolor)
 		}
 	} else {
 		fcolor = NewFColor(100/255.0, 149/255.0, 237/255.0)
