@@ -25,7 +25,7 @@ func main() {
 type IntersectionPoint struct {
 	distance float64
 	position *mat.VecDense
-	normal *mat.VecDense
+	normal   *mat.VecDense
 }
 
 // func newVector(data ...float64) *Vector { // error
@@ -33,13 +33,32 @@ func newVector(data ...float64) *mat.VecDense {
 	return mat.NewVecDense(len(data), data)
 }
 
+func shading_ambient(shape *Sphere) *FColor {
+	return NewFColor(30, 40, 50)
+}
+
+func rayTrace(ray *Ray, shape *Sphere) *FColor {
+	/* 交差判定 */
+	_, ok := shape.testIntersection(ray)
+
+	fcolor := NewFColor(0, 0, 0)
+
+	if ok {
+		fcolor = add(fcolor, shading_ambient(shape)).(*FColor) // ださい
+	} else {
+		fcolor = NewFColor(100, 149, 237)
+	}
+
+	return fcolor
+}
+
 func render(size int) {
 	from := newVector(0, 0, -5)
 
 	// Sphere
 	shape := NewSphere(newVector(0, 0, 5), 1.0)
-//	center := newVector(0, 0, 5)
-//	radius := 1.0
+	//	center := newVector(0, 0, 5)
+	//	radius := 1.0
 
 	fmt.Printf("P3\n%d %d\n255\n", size, size)
 
@@ -54,16 +73,8 @@ func render(size int) {
 
 			ray := NewRay(from, to)
 
-			/* 交差判定 */
-
-			_, ok := shape.testIntersection(ray)
-
-			if !ok {
-				//				log.Printf("%d %d b:%f c:%f d:%f\n", x, y, b, c, d)
-				fmt.Printf("0 0 200 ")
-			} else {
-				fmt.Printf("200 0 0 ")
-			}
+			fcolor := rayTrace(ray, shape)
+			fmt.Print(fcolor)
 		}
 	}
 }
