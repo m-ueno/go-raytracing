@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"log"
 	"strconv"
-
-	"gonum.org/v1/gonum/mat"
 )
 
 func main() {
@@ -24,13 +22,8 @@ func main() {
 
 type IntersectionPoint struct {
 	distance float64
-	position *mat.VecDense
-	normal   *mat.VecDense
-}
-
-// func newVector(data ...float64) *Vector { // error
-func newVector(data ...float64) *mat.VecDense {
-	return mat.NewVecDense(len(data), data)
+	position *Vector
+	normal   *Vector
 }
 
 func shading_ambient(shape *Sphere) *FColor {
@@ -44,7 +37,7 @@ func rayTrace(ray *Ray, shape *Sphere) *FColor {
 	fcolor := NewFColor(0, 0, 0)
 
 	if ok {
-		fcolor = add(fcolor, shading_ambient(shape)).(*FColor) // ださい
+		fcolor = FCAdd(fcolor, shading_ambient(shape))
 	} else {
 		fcolor = NewFColor(100, 149, 237)
 	}
@@ -53,11 +46,11 @@ func rayTrace(ray *Ray, shape *Sphere) *FColor {
 }
 
 func render(size int) {
-	from := newVector(0, 0, -5)
+	from := NewVector(0, 0, -5)
 
 	// Sphere
-	shape := NewSphere(newVector(0, 0, 5), 1.0)
-	//	center := newVector(0, 0, 5)
+	shape := NewSphere(NewVector(0, 0, 5), 1.0)
+	//	center := NewVector(0, 0, 5)
 	//	radius := 1.0
 
 	fmt.Printf("P3\n%d %d\n255\n", size, size)
@@ -67,9 +60,8 @@ func render(size int) {
 			screenXYZ := makeEye(x, y, size)
 
 			// 視線方向
-			to := mat.NewVecDense(3, nil)
-			to.SubVec(screenXYZ, from)
-			to.ScaleVec(1.0/mat.Norm(to, 2), to) // L2距離
+			to := Sub(screenXYZ, from)
+			to = Normalize(to)
 
 			ray := NewRay(from, to)
 
@@ -79,8 +71,8 @@ func render(size int) {
 	}
 }
 
-func makeEye(x int, y int, imageSize int) *mat.VecDense {
-	return newVector(
+func makeEye(x int, y int, imageSize int) *Vector {
+	return NewVector(
 		-1.0+float64(x)/float64(imageSize)*2,
 		1.0-float64(y)/float64(imageSize)*2,
 		0.0,

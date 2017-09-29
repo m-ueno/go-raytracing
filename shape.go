@@ -1,30 +1,25 @@
 package main
 
-import (
-	"math"
-
-	"gonum.org/v1/gonum/mat"
-)
+import "math"
 
 type Shape interface {
 	testIntersection()
 }
 
 type Sphere struct {
-	center *mat.VecDense
+	center *Vector
 	radius float64
 }
 
-func NewSphere(center *mat.VecDense, radius float64) *Sphere {
+func NewSphere(center *Vector, radius float64) *Sphere {
 	return &Sphere{center, radius}
 }
 
 func (sp *Sphere) testIntersection(ray *Ray) (*IntersectionPoint, bool) {
-	v := mat.NewVecDense(3, nil)
-	v.SubVec(ray.start, sp.center) // v = from - center  : カメラから球の中心
+	v := Sub(ray.start, sp.center) // v = from - center  : カメラから球の中心
 
-	b := mat.Dot(ray.direction, v) // b = to.dot(v)
-	c := mat.Dot(v, v) - sp.radius*sp.radius
+	b := Dot(ray.direction, v) // b = to.dot(v)
+	c := Dot(v, v) - sp.radius*sp.radius
 	d := b*b - c
 
 	if d < 0 { // 2次方程式が実数解を持たない
@@ -32,7 +27,7 @@ func (sp *Sphere) testIntersection(ray *Ray) (*IntersectionPoint, bool) {
 	}
 
 	det := math.Sqrt(d)
-	a := mat.Dot(ray.direction, ray.direction) // 大きさ ほぼ1では？
+	a := Dot(ray.direction, ray.direction) // 大きさ ほぼ1では？
 
 	t1 := (-b - det) / a
 	t2 := (-b + det) / a
@@ -50,9 +45,8 @@ func (sp *Sphere) testIntersection(ray *Ray) (*IntersectionPoint, bool) {
 	}
 
 	// t>=0 なら交差ある
-	i_position := newVector(0, 0, 0)
-	i_position.AddScaledVec(ray.start, t, ray.direction) // pos = A + c*B
-	normal := normalize(sub(i_position, sp.center))
+	i_position := Add(ray.start, Scale(t, ray.direction)) // pos = A + c*B
+	normal := Normalize(Sub(i_position, sp.center))
 
 	return &IntersectionPoint{
 		distance: t,

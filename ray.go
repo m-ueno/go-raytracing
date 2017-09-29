@@ -1,12 +1,10 @@
 package main
 
-import "gonum.org/v1/gonum/mat"
-
 type Ray struct {
-	start *mat.VecDense
-	direction *mat.VecDense
+	start *Vector
+	direction *Vector
 }
 
-func NewRay(start, direction *mat.VecDense) *Ray {
+func NewRay(start, direction *Vector) *Ray {
 	return &Ray{start, direction}
 }

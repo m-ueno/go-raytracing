@@ -1,32 +1,50 @@
 package main
 
-import "gonum.org/v1/gonum/mat"
+import (
+	"math"
+)
 
-func normalize(v *mat.VecDense) *mat.VecDense {
-	vv := newVector(0, 0, 0)
-	norm := mat.Norm(v, 2)
-	vv.ScaleVec(1.0/norm, v)
-	return vv
+type Vector struct {
+	x, y, z float64
 }
 
-// FColorにはFColor, VecDenseにはVecDenseを返したい
-// mat.Vectorはインタフェース
-func add(a, b mat.Vector) mat.Vector {
-	v := newVector(0, 0, 0)
-	v.AddVec(a.(*mat.VecDense), b.(*mat.VecDense))
-//	v.AddVec(a, b)
-
-	return v
+func NewVector(x, y, z float64) *Vector {
+	return &Vector{x, y, z}
 }
 
-func sub(a, b *mat.VecDense) *mat.VecDense {
-	v := newVector(0, 0, 0)
-	v.SubVec(a, b)
-	return v
+func Add(a, b *Vector) *Vector {
+	return NewVector(
+		a.x+b.x,
+		a.y+b.y,
+		a.z+b.z,
+	)
 }
 
-func scale(alpha float64, a *mat.VecDense) *mat.VecDense {
-	v := newVector(0, 0, 0)
-	v.ScaleVec(alpha, a)
-	return v
+func Sub(a, b *Vector) *Vector {
+	return NewVector(
+		a.x-b.x,
+		a.y-b.y,
+		a.z-b.z,
+	)
+}
+
+func Scale(alpha float64, a *Vector) *Vector {
+	return NewVector(
+		alpha*a.x,
+		alpha*a.y,
+		alpha*a.z,
+	)
+}
+
+func Dot(a, b *Vector) float64 {
+	return a.x*b.x + a.y*b.y + a.z*b.z
+}
+
+func Norm(a *Vector) float64 {
+	return math.Sqrt(Dot(a, a)) // sqrt(||a||^2)
+}
+
+func Normalize(a *Vector) *Vector {
+	norm_inverse := 1.0 / Norm(a)
+	return Scale(norm_inverse, a)
 }
