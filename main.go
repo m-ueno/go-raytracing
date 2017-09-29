@@ -14,7 +14,7 @@ func main() {
 	args := flag.Args()
 	size, _ := strconv.Atoi(args[0])
 
-	scene := NewScene24(size)
+	scene := NewScene25(size)
 	scene.render()
 
 	log.Println("bye")
@@ -24,6 +24,11 @@ type IntersectionPoint struct {
 	distance float64
 	position *Vector
 	normal   *Vector
+}
+
+type IntersectionTestResult struct {
+	intersectionPoint *IntersectionPoint
+	shape             Shape
 }
 
 func makeEye(x int, y int, imageSize int) *Vector {

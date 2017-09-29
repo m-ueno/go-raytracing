@@ -32,19 +32,50 @@ func (sc *Scene) shadingDiffuse(
 	return r_d
 }
 
-func (sc *Scene) rayTrace(ray *Ray, shape Shape) *FColor {
-	/* 交差判定 */
-	ip, ok := shape.testIntersection(ray)
+func (sc *Scene) testIntersectionWithAll(ray *Ray) (*IntersectionTestResult, bool) {
+	var nearestShape Shape = nil
+	nearestIP := &IntersectionPoint{
+		distance: 1e10,
+		normal:   nil,
+		position: nil,
+	}
 
-	fcolor := sc.shadingAmbient(shape)
+	for _, shape := range sc.shapes {
+		ip, found := shape.testIntersection(ray)
+		if found {
+			if ip.distance < nearestIP.distance {
+				nearestShape = shape
+				nearestIP = ip
+			}
+		}
+	}
 
-	if ok {
+	testResult := &IntersectionTestResult{
+		intersectionPoint: nearestIP,
+		shape:             nearestShape,
+	}
+
+	return testResult, nearestShape != nil
+}
+
+func (sc *Scene) rayTrace(ray *Ray) *FColor {
+	/* 全shapeとの交差判定 */
+	// ip, ok := shape.testIntersection(ray)
+	testResult, found := sc.testIntersectionWithAll(ray)
+
+	// set default color
+	fcolor := NewFColor(100/255.0, 149/255.0, 237/255.0)
+
+	if found {
+		shape := testResult.shape
+		ip := testResult.intersectionPoint
+
+		fcolor = sc.shadingAmbient(shape)
+
 		for _, ls := range sc.lightSources {
 			fcolor = FCAdd(fcolor, sc.shadingDiffuse(ip, ls, shape))
 			//			log.Printf("ip:%v, fc:%v\n", ip, fcolor)
 		}
-	} else {
-		fcolor = NewFColor(100/255.0, 149/255.0, 237/255.0)
 	}
 
 	return fcolor
@@ -60,8 +91,8 @@ func (sc *Scene) render() {
 
 	fmt.Printf("P3\n%d %d\n255\n", size, size)
 
-	for x := 0; x < size; x++ {
-		for y := 0; y < size; y++ {
+	for y := 0; y < size; y++ {
+		for x := 0; x < size; x++ {
 			screenXYZ := makeEye(x, y, size)
 
 			// 視線方向
@@ -70,9 +101,7 @@ func (sc *Scene) render() {
 
 			ray := NewRay(from, to)
 
-			shape := sc.shapes[0]
-
-			fcolor := sc.rayTrace(ray, shape)
+			fcolor := sc.rayTrace(ray)
 			fmt.Print(fcolor)
 		}
 	}
