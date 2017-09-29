@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"math"
 	"strconv"
 )
 
@@ -30,16 +31,33 @@ func shadingAmbient(shape Shape) *FColor {
 	return shape.Material().k_a
 }
 
+func shadingDiffuse(ip *IntersectionPoint, lightSource LightSource, shape Shape) *FColor {
+	lighting := lightSource.LightingAt(ip.position)
+	k_d := shape.Material().k_d
+
+	v_n := ip.normal
+	v_l := Scale(-1.0, lighting.direction)
+	dot := math.Max(0, Dot(v_l, v_n))
+	r_d := FCScale(dot*lighting.intensity, k_d)
+
+	return r_d
+}
+
 func rayTrace(ray *Ray, shape *Sphere) *FColor {
 	/* 交差判定 */
-	_, ok := shape.testIntersection(ray)
+	ip, ok := shape.testIntersection(ray)
+
+	ls := NewPointLightSource(1, NewVector(-5, 5, -5))
 
 	fcolor := NewFColor(0, 0, 0)
 
 	if ok {
 		fcolor = FCAdd(fcolor, shadingAmbient(shape))
+		fcolor = FCAdd(fcolor, shadingDiffuse(ip, ls, shape))
+		log.Printf("ip:%v, fc:%v\n", ip, fcolor)
+
 	} else {
-		fcolor = NewFColor(100, 149, 237)
+		fcolor = NewFColor(100/255.0, 149/255.0, 237/255.0)
 	}
 
 	return fcolor
