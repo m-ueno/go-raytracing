@@ -9,10 +9,11 @@ type Shape interface {
 type Sphere struct {
 	center *Vector
 	radius float64
+	material *Material
 }
 
-func NewSphere(center *Vector, radius float64) *Sphere {
-	return &Sphere{center, radius}
+func NewSphere(center *Vector, radius float64, material *Material) *Sphere {
+	return &Sphere{center, radius, material}
 }
 
 func (sp *Sphere) testIntersection(ray *Ray) (*IntersectionPoint, bool) {

@@ -27,7 +27,7 @@ type IntersectionPoint struct {
 }
 
 func shading_ambient(shape *Sphere) *FColor {
-	return NewFColor(30, 40, 50)
+	return shape.material.k_a
 }
 
 func rayTrace(ray *Ray, shape *Sphere) *FColor {
@@ -49,7 +49,11 @@ func render(size int) {
 	from := NewVector(0, 0, -5)
 
 	// Sphere
-	shape := NewSphere(NewVector(0, 0, 5), 1.0)
+	shape := NewSphere(
+		NewVector(0, 0, 5),
+		1.0,
+		NewMaterial(),
+	)
 	//	center := NewVector(0, 0, 5)
 	//	radius := 1.0
 
