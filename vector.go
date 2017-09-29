@@ -9,9 +9,12 @@ func normalize(v *mat.VecDense) *mat.VecDense {
 	return vv
 }
 
-func add(a, b *mat.VecDense) *mat.VecDense {
+// FColorにはFColor, VecDenseにはVecDenseを返したい
+// mat.Vectorはインタフェース
+func add(a, b mat.Vector) mat.Vector {
 	v := newVector(0, 0, 0)
-	v.AddVec(a, b)
+	v.AddVec(a.(*mat.VecDense), b.(*mat.VecDense))
+//	v.AddVec(a, b)
 
 	return v
 }
