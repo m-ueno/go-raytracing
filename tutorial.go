@@ -76,3 +76,52 @@ func NewScene27(size int) *Scene {
 	}
 	return sc
 }
+
+func NewScene32(size int) *Scene {
+	// 完全鏡面反射の部屋
+	shapes := []Shape{
+		&Sphere{
+			center:   NewVector(-0.25, -0.5, 3),
+			radius:   0.5,
+			material: NewReflectMaterial(),
+		},
+		&Sphere{
+			center:   NewVector(0.80, -0.5, 3),
+			radius:   0.5,
+			material: NewReflectMaterial(),
+		},
+		&Plane{ // 床
+			material: NewMaterial(),
+			normal:   NewVector(0, 1, 0),
+			position: NewVector(0, -1, 0),
+		},
+		&Plane{ // 天井
+			material: NewMaterial(),
+			normal:   NewVector(0, -1, 0),
+			position: NewVector(0, 1, 0),
+		},
+
+		&Plane{ // 左
+			material: NewMaterial(),
+			normal:   NewVector(1, 0, 0),
+			position: NewVector(-1, 0, 0),
+		},
+		&Plane{ // 奥
+			material: NewMaterial(),
+			normal:   NewVector(0, 0, -1),
+			position: NewVector(0, 0, 5),
+		},
+	}
+	lightSources := []LightSource{
+		NewPointLightSource(1.0, NewVector(0, 0.9, 2.5)),
+	}
+
+	ambientIntensity := 0.1
+
+	return &Scene{
+		shapes:           shapes,
+		lightSources:     lightSources,
+		ambientIntensity: ambientIntensity,
+		size:             size,
+	}
+}

@@ -101,6 +101,13 @@ func (sc *Scene) testShadow(lightSource LightSource, ip *IntersectionPoint) bool
 }
 
 func (sc *Scene) rayTrace(ray *Ray) *FColor {
+	return sc.rayTraceRecursive(ray, 0)
+}
+
+func (sc *Scene) rayTraceRecursive(ray *Ray, recLevel int) *FColor {
+	if recLevel > 10 {
+		return nil // 交差なし
+	}
 	/* 全shapeとの交差判定 */
 	// ip, ok := shape.testIntersection(ray)
 	testResult, found := sc.testIntersectionWithAll(ray)
@@ -110,6 +117,7 @@ func (sc *Scene) rayTrace(ray *Ray) *FColor {
 
 	if found {
 		shape := testResult.shape
+		mat := shape.Material()
 		ip := testResult.intersectionPoint
 
 		fcolor = sc.shadingAmbient(shape)
@@ -122,6 +130,25 @@ func (sc *Scene) rayTrace(ray *Ray) *FColor {
 			fcolor = FCAdd(fcolor, sc.shadingDiffuse(ip, ls, shape))
 			fcolor = FCAdd(fcolor, sc.shadingSpecular(ip, ls, ray, shape))
 			//			log.Printf("ip:%v, fc:%v\n", ip, fcolor)
+		}
+
+		// 完全鏡面反射
+		if mat.usePerfectReflectance {
+			v_n := ip.normal                             // 法線ベクトル
+			v_v := Scale(-1.0, Normalize(ray.direction)) // 視線ベクトルの逆
+			cos := Dot(v_v, v_n)
+			if cos > 0 { // 表からの進入
+				v_r := Sub(Scale(2*cos, v_n), v_v) // 大元の視線ベクトルの、正反射ベクトル
+				reRay := &Ray{
+					direction: v_r,
+					start:     Add(ip.position, Scale(EPSILON, v_r)),
+				}
+
+				r_reOrNil := sc.rayTraceRecursive(reRay, recLevel+1)
+				if r_reOrNil != nil {
+					fcolor = FCAdd(fcolor, FCScale(mat.catadioptricFactor, r_reOrNil))
+				}
+			}
 		}
 	}
 
