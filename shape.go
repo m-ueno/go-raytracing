@@ -3,12 +3,19 @@ package main
 import "math"
 
 type Shape interface {
-	testIntersection()
+	testIntersection(*Ray) (*IntersectionPoint, bool)
+	Material() *Material
 }
 
 type Sphere struct {
-	center *Vector
-	radius float64
+	center   *Vector
+	radius   float64
+	material *Material
+}
+
+type Plane struct {
+	position *Vector
+	normal   *Vector
 	material *Material
 }
 
@@ -54,4 +61,9 @@ func (sp *Sphere) testIntersection(ray *Ray) (*IntersectionPoint, bool) {
 		position: i_position,
 		normal:   normal,
 	}, true
+}
+
+// Getter
+func (sp *Sphere) Material() *Material {
+	return sp.material
 }

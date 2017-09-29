@@ -26,8 +26,8 @@ type IntersectionPoint struct {
 	normal   *Vector
 }
 
-func shading_ambient(shape *Sphere) *FColor {
-	return shape.material.k_a
+func shadingAmbient(shape Shape) *FColor {
+	return shape.Material().k_a
 }
 
 func rayTrace(ray *Ray, shape *Sphere) *FColor {
@@ -37,7 +37,7 @@ func rayTrace(ray *Ray, shape *Sphere) *FColor {
 	fcolor := NewFColor(0, 0, 0)
 
 	if ok {
-		fcolor = FCAdd(fcolor, shading_ambient(shape))
+		fcolor = FCAdd(fcolor, shadingAmbient(shape))
 	} else {
 		fcolor = NewFColor(100, 149, 237)
 	}
