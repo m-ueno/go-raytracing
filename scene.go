@@ -55,6 +55,10 @@ func (sc *Scene) shadingSpecular(
 }
 
 func (sc *Scene) testIntersectionWithAll(ray *Ray) (*IntersectionTestResult, bool) {
+	return sc.testIntersectionWithAllFullParam(ray, math.MaxFloat64, false)
+}
+
+func (sc *Scene) testIntersectionWithAllFullParam(ray *Ray, maxDist float64, exitOnceFound bool) (*IntersectionTestResult, bool) {
 	var nearestShape Shape = nil
 	nearestIP := &IntersectionPoint{
 		distance: 1e10,
@@ -64,10 +68,13 @@ func (sc *Scene) testIntersectionWithAll(ray *Ray) (*IntersectionTestResult, boo
 
 	for _, shape := range sc.shapes {
 		ip, found := shape.testIntersection(ray)
-		if found {
+		if found && ip.distance < maxDist {
 			if ip.distance < nearestIP.distance {
 				nearestShape = shape
 				nearestIP = ip
+			}
+			if exitOnceFound {
+				break
 			}
 		}
 	}
@@ -78,6 +85,19 @@ func (sc *Scene) testIntersectionWithAll(ray *Ray) (*IntersectionTestResult, boo
 	}
 
 	return testResult, nearestShape != nil
+}
+
+func (sc *Scene) testShadow(lightSource LightSource, ip *IntersectionPoint) bool {
+	lighting := lightSource.LightingAt(ip.position)
+	v_l := Scale(-1.0, lighting.direction)
+	shadowRay := &Ray{
+		direction: v_l,
+		start:     Add(ip.position, Scale(EPSILON, v_l)),
+	}
+
+	_, found := sc.testIntersectionWithAllFullParam(shadowRay, lighting.distance-EPSILON, true)
+
+	return found
 }
 
 func (sc *Scene) rayTrace(ray *Ray) *FColor {
@@ -95,6 +115,10 @@ func (sc *Scene) rayTrace(ray *Ray) *FColor {
 		fcolor = sc.shadingAmbient(shape)
 
 		for _, ls := range sc.lightSources {
+			if sc.testShadow(ls, ip) {
+				continue
+			}
+
 			fcolor = FCAdd(fcolor, sc.shadingDiffuse(ip, ls, shape))
 			fcolor = FCAdd(fcolor, sc.shadingSpecular(ip, ls, ray, shape))
 			//			log.Printf("ip:%v, fc:%v\n", ip, fcolor)

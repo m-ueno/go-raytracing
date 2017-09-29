@@ -66,3 +66,13 @@ func NewScene25(size int) *Scene {
 		size:             size,
 	}
 }
+
+func NewScene27(size int) *Scene {
+	sc := NewScene25(size)
+	sc.lightSources = []LightSource{
+		NewPointLightSource(0.5, NewVector(-5, 5, -5)),
+		NewPointLightSource(0.5, NewVector(5, 0, -5)),
+		NewPointLightSource(0.5, NewVector(5, 20, -5)),
+	}
+	return sc
+}

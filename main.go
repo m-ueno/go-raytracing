@@ -6,6 +6,8 @@ import (
 	"strconv"
 )
 
+const EPSILON = 1.0 / 128
+
 func main() {
 	log.Println("hello")
 
@@ -14,7 +16,7 @@ func main() {
 	args := flag.Args()
 	size, _ := strconv.Atoi(args[0])
 
-	scene := NewScene25(size)
+	scene := NewScene27(size)
 	scene.render()
 
 	log.Println("bye")
