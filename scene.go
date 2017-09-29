@@ -32,6 +32,28 @@ func (sc *Scene) shadingDiffuse(
 	return r_d
 }
 
+func (sc *Scene) shadingSpecular(
+	ip *IntersectionPoint,
+	lightSource LightSource,
+	ray *Ray,
+	shape Shape) *FColor {
+
+	lighting := lightSource.LightingAt(ip.position)
+	k_s := shape.Material().k_s
+	v_n := ip.normal
+	v_l := Scale(-1.0, lighting.direction)
+	to := ray.direction
+
+	v_v := Scale(-1.0, to)
+	v_r := Sub(Scale(2.0*Dot(v_n, v_l), v_n), v_l) //# 正反射ベクトル. 交点で入射光が反射する
+	// vR = 2 * cos * vN - vL
+
+	dot := math.Max(Dot(v_v, v_r), 0.0)
+	r_s := FCScale(lighting.intensity*math.Pow(dot, shape.Material().shininess), k_s)
+
+	return r_s
+}
+
 func (sc *Scene) testIntersectionWithAll(ray *Ray) (*IntersectionTestResult, bool) {
 	var nearestShape Shape = nil
 	nearestIP := &IntersectionPoint{
@@ -74,6 +96,7 @@ func (sc *Scene) rayTrace(ray *Ray) *FColor {
 
 		for _, ls := range sc.lightSources {
 			fcolor = FCAdd(fcolor, sc.shadingDiffuse(ip, ls, shape))
+			fcolor = FCAdd(fcolor, sc.shadingSpecular(ip, ls, ray, shape))
 			//			log.Printf("ip:%v, fc:%v\n", ip, fcolor)
 		}
 	}
