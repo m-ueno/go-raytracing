@@ -13,27 +13,6 @@ type Scene struct {
 	size             int
 }
 
-func NewScene24(size int) *Scene {
-	shapes := []Shape{
-		NewSphere(
-			NewVector(0, 0, 5),
-			1.0,
-			NewMaterial(),
-		),
-	}
-	lightSources := []LightSource{
-		NewPointLightSource(1.0, NewVector(-5, 5, -5)),
-	}
-	ambientIntensity := 0.1
-
-	return &Scene{
-		shapes:           shapes,
-		lightSources:     lightSources,
-		ambientIntensity: ambientIntensity,
-		size:             size,
-	}
-}
-
 func (sc *Scene) shadingAmbient(shape Shape) *FColor {
 	return FCScale(sc.ambientIntensity, shape.Material().k_a)
 }
