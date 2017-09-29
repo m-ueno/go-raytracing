@@ -48,6 +48,11 @@ func NewScene25(size int) *Scene {
 			1.0,
 			NewMaterial(),
 		),
+		&Plane{
+			normal:   NewVector(0, 1, 0),
+			position: NewVector(0, -1, 0),
+			material: NewMaterial(),
+		},
 	}
 	lightSources := []LightSource{
 		NewPointLightSource(1.0, NewVector(-5, 5, -5)),

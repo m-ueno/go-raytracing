@@ -67,3 +67,38 @@ func (sp *Sphere) testIntersection(ray *Ray) (*IntersectionPoint, bool) {
 func (sp *Sphere) Material() *Material {
 	return sp.material
 }
+
+func NewPlane(normal, position *Vector, material *Material) *Plane {
+	return &Plane{
+		normal:   normal,
+		position: position,
+		material: material,
+	}
+}
+
+func (pl *Plane) testIntersection(ray *Ray) (*IntersectionPoint, bool) {
+	s := ray.start
+	d := ray.direction
+	n := pl.normal
+
+	cos := Dot(d, n)
+	if cos == 0 {
+		return nil, false
+	} else {
+		t := Dot(Add(Scale(-1.0, s), pl.position), n) / cos
+
+		if t > 0 {
+			return &IntersectionPoint{
+				distance: t,
+				normal:   n,
+				position: Add(s, Scale(t, d)),
+			}, true
+		} else {
+			return nil, false
+		}
+	}
+}
+
+func (pl *Plane) Material() *Material {
+	return pl.material
+}
