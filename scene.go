@@ -8,10 +8,21 @@ import (
 
 // 物体と光源の集合
 type Scene struct {
-	shapes           []Shape
-	lightSources     []LightSource
-	ambientIntensity float64
-	size             int
+	shapes                []Shape
+	lightSources          []LightSource
+	ambientIntensity      float64
+	size                  int
+	globalRefractionIndex float64 // 大気の絶対屈折率
+}
+
+func NewScene(shapes []Shape, lightSources []LightSource, size int) *Scene {
+	return &Scene{
+		shapes:           shapes,
+		lightSources:     lightSources,
+		ambientIntensity: 0.1,
+		size:             size,
+		globalRefractionIndex: 1.000293,
+	}
 }
 
 func (sc *Scene) shadingAmbient(shape Shape) *FColor {
@@ -147,6 +158,53 @@ func (sc *Scene) rayTraceRecursive(ray *Ray, recLevel int) *FColor {
 				if r_reOrNil != nil {
 					fcolor = FCAdd(fcolor, FCScale(mat.catadioptricFactor, r_reOrNil))
 				}
+			}
+		}
+
+		// 屈折
+		if mat.useRefraction {
+			v := Scale(-1, Normalize(ray.direction)) // 視線の逆ベクトル
+			n := Normalize(ip.normal)
+
+			tau1 := sc.globalRefractionIndex
+			tau2 := shape.Material().refractionIndex
+
+			// ウラ面判定
+			cos1 := Dot(v, n)
+			if cos1 < 0 { // 裏から入射 (物体->大気)
+				tau1, tau2 = tau2, tau1
+				n = Scale(-1, n)
+				cos1 = Dot(v, n) // 内積を再計算
+			}
+
+			tauR := tau2 / tau1
+			cos2 := 1.0 / tauR * math.Sqrt(tauR*tauR-(1-cos1*cos1))
+			omega := tauR*cos2 - cos1
+
+			reDir := Sub(Scale(2*cos1, n), v) // 大元の視線ベクトルの、正反射ベクトル (alias: v_r)
+			feDir := Scale(1/tauR, Sub(Normalize(ray.direction), Scale(omega, n)))
+			feDir = Normalize(feDir)
+
+			reRay := &Ray{ // 正反射方向の半直線
+				direction: reDir,
+				start:     Add(ip.position, Scale(EPSILON, reDir)),
+			}
+			feRay := &Ray{ // 屈折方向の半直線
+				direction: feDir,
+				start:     Add(ip.position, Scale(EPSILON, feDir)),
+			}
+			rhoP := (tauR*cos1 - cos2) / (tauR*cos1 + cos2) // p偏光反射率
+			rhoS := -omega / (tauR*cos2 + cos1)             // s偏光反射率
+			cR := (rhoP*rhoP + rhoS*rhoS) / 2               // 完全鏡面反射光の割合
+			cT := 1.0 - cR                                  // 屈折光の割合
+
+			reROrNil := sc.rayTraceRecursive(reRay, recLevel+1) // 完全鏡面反射光の放射輝度
+			if reROrNil != nil {
+				fcolor = FCAdd(fcolor, FCScale(cR*mat.catadioptricFactor, reROrNil))
+			}
+			feROrNil := sc.rayTraceRecursive(feRay, recLevel+1) // 屈折光の放射輝度
+			if feROrNil != nil {
+				fcolor = FCAdd(fcolor, FCScale(cT*mat.catadioptricFactor, feROrNil))
 			}
 		}
 	}

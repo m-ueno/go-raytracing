@@ -7,6 +7,8 @@ type Material struct {
 	k_s                   *FColor
 	usePerfectReflectance bool
 	catadioptricFactor    float64 //*FColor
+	useRefraction         bool    // 屈折を使用するかどうか
+	refractionIndex       float64 // 絶対屈折率
 }
 
 func NewMaterial() *Material {
