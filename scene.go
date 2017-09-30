@@ -100,6 +100,8 @@ func (sc *Scene) testShadow(lightSource LightSource, ip *IntersectionPoint) bool
 	return found
 }
 
+var backgroundColor *FColor = NewFColor(100/255.0, 149/255.0, 237/255.0)
+
 func (sc *Scene) rayTrace(ray *Ray) *FColor {
 	return sc.rayTraceRecursive(ray, 0)
 }
@@ -108,12 +110,10 @@ func (sc *Scene) rayTraceRecursive(ray *Ray, recLevel int) *FColor {
 	if recLevel > 10 {
 		return nil // 交差なし
 	}
-	/* 全shapeとの交差判定 */
-	// ip, ok := shape.testIntersection(ray)
 	testResult, found := sc.testIntersectionWithAll(ray)
 
 	// set default color
-	fcolor := NewFColor(100/255.0, 149/255.0, 237/255.0)
+	fcolor := backgroundColor
 
 	if found {
 		shape := testResult.shape
@@ -126,10 +126,8 @@ func (sc *Scene) rayTraceRecursive(ray *Ray, recLevel int) *FColor {
 			if sc.testShadow(ls, ip) {
 				continue
 			}
-
 			fcolor = FCAdd(fcolor, sc.shadingDiffuse(ip, ls, shape))
 			fcolor = FCAdd(fcolor, sc.shadingSpecular(ip, ls, ray, shape))
-			//			log.Printf("ip:%v, fc:%v\n", ip, fcolor)
 		}
 
 		// 完全鏡面反射
@@ -155,24 +153,20 @@ func (sc *Scene) rayTraceRecursive(ray *Ray, recLevel int) *FColor {
 	return fcolor
 }
 
+func (sc *Scene) renderHead() {
+	fmt.Printf("P3\n%d %d\n255\n", sc.size, sc.size)
+}
+
 func (sc *Scene) render() {
 	size := sc.size
 	from := NewVector(0, 0, -5)
 
-	// Sphere
-	//	center := NewVector(0, 0, 5)
-	//	radius := 1.0
-
-	fmt.Printf("P3\n%d %d\n255\n", size, size)
+	sc.renderHead()
 
 	for y := 0; y < size; y++ {
 		for x := 0; x < size; x++ {
 			screenXYZ := makeEye(x, y, size)
-
-			// 視線方向
-			to := Sub(screenXYZ, from)
-			to = Normalize(to)
-
+			to := Normalize(Sub(screenXYZ, from))
 			ray := NewRay(from, to)
 
 			fcolor := sc.rayTrace(ray)

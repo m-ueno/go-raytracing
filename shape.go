@@ -35,7 +35,7 @@ func (sp *Sphere) testIntersection(ray *Ray) (*IntersectionPoint, bool) {
 	}
 
 	det := math.Sqrt(d)
-	a := Dot(ray.direction, ray.direction) // 大きさ ほぼ1では？
+	a := Dot(ray.direction, ray.direction)
 
 	t1 := (-b - det) / a
 	t2 := (-b + det) / a
@@ -48,19 +48,20 @@ func (sp *Sphere) testIntersection(ray *Ray) (*IntersectionPoint, bool) {
 		t = math.Max(t1, t2)
 	}
 
-	if t < 0 { // 視線ベクトルから逆向き
+	if t >= 0 {
+		// 視線ベクトルの延長線上に交点がある
+		i_position := Add(ray.start, Scale(t, ray.direction)) // pos = A + c*B
+		normal := Normalize(Sub(i_position, sp.center))
+
+		return &IntersectionPoint{
+			distance: t,
+			position: i_position,
+			normal:   normal,
+		}, true
+	} else {
+		// 視線ベクトルから逆向き
 		return &IntersectionPoint{}, false
 	}
-
-	// t>=0 なら交差ある
-	i_position := Add(ray.start, Scale(t, ray.direction)) // pos = A + c*B
-	normal := Normalize(Sub(i_position, sp.center))
-
-	return &IntersectionPoint{
-		distance: t,
-		position: i_position,
-		normal:   normal,
-	}, true
 }
 
 // Getter

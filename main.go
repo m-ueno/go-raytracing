@@ -9,7 +9,7 @@ import (
 const EPSILON = 1.0 / 128
 
 func main() {
-	log.Println("hello")
+	log.Println("start")
 
 	flag.Parse()
 
@@ -19,7 +19,7 @@ func main() {
 	scene := NewScene32(size)
 	scene.render()
 
-	log.Println("bye")
+	log.Println("end")
 }
 
 type IntersectionPoint struct {
