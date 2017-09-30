@@ -16,7 +16,7 @@ func main() {
 	args := flag.Args()
 	size, _ := strconv.Atoi(args[0])
 
-	scene := NewScene32(size)
+	scene := NewScene32_2(size)
 	scene.render(false)
 
 	log.Println("end")
