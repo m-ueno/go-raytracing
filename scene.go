@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"math"
+	"math/rand"
 )
 
 // 物体と光源の集合
@@ -157,7 +158,7 @@ func (sc *Scene) renderHead() {
 	fmt.Printf("P3\n%d %d\n255\n", sc.size, sc.size)
 }
 
-func (sc *Scene) render() {
+func (sc *Scene) render(antialiasing bool) {
 	size := sc.size
 	from := NewVector(0, 0, -5)
 
@@ -165,11 +166,28 @@ func (sc *Scene) render() {
 
 	for y := 0; y < size; y++ {
 		for x := 0; x < size; x++ {
-			screenXYZ := makeEye(x, y, size)
-			to := Normalize(Sub(screenXYZ, from))
-			ray := NewRay(from, to)
+			fcolor := NewFColor(0, 0, 0)
 
-			fcolor := sc.rayTrace(ray)
+			if antialiasing {
+				fcolorAcc := NewFColor(0, 0, 0)
+				nSample := 10
+
+				for s := 0; s < nSample; s++ {
+					screenXYZ := makeEyeWithSampling(x, y, size, rand.Float64(), rand.Float64())
+					to := Normalize(Sub(screenXYZ, from))
+					ray := NewRay(from, to)
+
+					fcolorAcc = FCAdd(fcolorAcc, sc.rayTrace(ray))
+				}
+				fcolor = FCScale(1.0/float64(nSample), fcolorAcc)
+			} else {
+				screenXYZ := makeEye(x, y, size)
+				to := Normalize(Sub(screenXYZ, from))
+				ray := NewRay(from, to)
+
+				fcolor = sc.rayTrace(ray)
+			}
+
 			fmt.Print(fcolor)
 		}
 	}

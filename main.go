@@ -17,7 +17,7 @@ func main() {
 	size, _ := strconv.Atoi(args[0])
 
 	scene := NewScene32(size)
-	scene.render()
+	scene.render(false)
 
 	log.Println("end")
 }
@@ -34,9 +34,13 @@ type IntersectionTestResult struct {
 }
 
 func makeEye(x int, y int, imageSize int) *Vector {
+	return makeEyeWithSampling(x, y, imageSize, 0, 0)
+}
+
+func makeEyeWithSampling(x, y int, imageSize int, dx, dy float64) *Vector {
 	return NewVector(
-		-1.0+float64(x)/float64(imageSize)*2,
-		1.0-float64(y)/float64(imageSize)*2,
+		-1.0+(float64(x)+dx)/float64(imageSize)*2,
+		1.0-(float64(y)+dy)/float64(imageSize)*2,
 		0.0,
 	)
 }
