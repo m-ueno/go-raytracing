@@ -3,21 +3,26 @@ package main
 import (
 	"flag"
 	"log"
-	"strconv"
 )
 
 const EPSILON = 1.0 / 128
 
 func main() {
-	log.Println("start")
+	var size = flag.Int("size", 0, "Image size in pixels")
+	var antialiasing = flag.Bool("aa", false, "Enable antialiasing (slow)")
 
 	flag.Parse()
+	if *size == 0 {
+		log.Fatalln("Please provide `-size <size>`")
+		return
+	}
 
-	args := flag.Args()
-	size, _ := strconv.Atoi(args[0])
+	log.Println("start")
+	log.Println("antialiasing:", *antialiasing)
+	log.Println("size:", *size)
 
-	scene := NewScene33(size)
-	scene.render(false)
+	scene := NewScene33(*size)
+	scene.render(*antialiasing)
 
 	log.Println("end")
 }
