@@ -52,6 +52,6 @@ func Norm(a *Vector) float64 {
 
 // Normalize returns pointer of normalized vector
 func Normalize(a *Vector) *Vector {
-	norm_inverse := 1.0 / Norm(a)
-	return Scale(norm_inverse, a)
+	normInverse := 1.0 / Norm(a)
+	return Scale(normInverse, a)
 }

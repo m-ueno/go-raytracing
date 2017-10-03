@@ -53,12 +53,12 @@ func (sp *Sphere) testIntersection(ray *Ray) (*IntersectionPoint, bool) {
 
 	if t >= 0 {
 		// 視線ベクトルの延長線上に交点がある
-		i_position := Add(ray.start, Scale(t, ray.direction)) // pos = A + c*B
-		normal := Normalize(Sub(i_position, sp.center))
+		position := Add(ray.start, Scale(t, ray.direction)) // pos = A + c*B
+		normal := Normalize(Sub(position, sp.center))
 
 		return &IntersectionPoint{
 			distance: t,
-			position: i_position,
+			position: position,
 			normal:   normal,
 		}, true
 	}
