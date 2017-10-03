@@ -1,5 +1,6 @@
 package main
 
+// Material is reflection information
 type Material struct {
 	shininess             float64
 	k_a                   *fColor

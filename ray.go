@@ -1,7 +1,8 @@
 package main
 
+// Ray is half line
 type Ray struct {
-	start *Vector
+	start     *Vector
 	direction *Vector
 }
 

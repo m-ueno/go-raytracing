@@ -2,17 +2,20 @@ package main
 
 import "math"
 
+// Shape can test intersection with given ray. Shape has material
 type Shape interface {
 	testIntersection(*Ray) (*IntersectionPoint, bool)
 	Material() *Material
 }
 
+// Sphere is a Shape
 type Sphere struct {
 	center   *Vector
 	radius   float64
 	material *Material
 }
 
+// Plane is a Infinite plane
 type Plane struct {
 	position *Vector
 	normal   *Vector
@@ -64,7 +67,7 @@ func (sp *Sphere) testIntersection(ray *Ray) (*IntersectionPoint, bool) {
 	}
 }
 
-// Getter
+// Material is a getter method. Need for polymorphism
 func (sp *Sphere) Material() *Material {
 	return sp.material
 }
@@ -100,6 +103,7 @@ func (pl *Plane) testIntersection(ray *Ray) (*IntersectionPoint, bool) {
 	}
 }
 
+// Material is getter method
 func (pl *Plane) Material() *Material {
 	return pl.material
 }
