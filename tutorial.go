@@ -1,15 +1,15 @@
 package main
 
-func NewScene24(size int) *Scene {
+func newScene24(size int) *Scene {
 	shapes := []Shape{
-		NewSphere(
-			NewVector(0, 0, 5),
+		newSphere(
+			newVector(0, 0, 5),
 			1.0,
-			NewMaterial(),
+			newMaterial(),
 		),
 	}
 	lightSources := []LightSource{
-		NewPointLightSource(1.0, NewVector(-5, 5, -5)),
+		newPointLightSource(1.0, newVector(-5, 5, -5)),
 	}
 	ambientIntensity := 0.1
 
@@ -21,41 +21,41 @@ func NewScene24(size int) *Scene {
 	}
 }
 
-func NewScene25(size int) *Scene {
+func newScene25(size int) *Scene {
 	shapes := []Shape{
-		NewSphere(
-			NewVector(3, 0, 25),
+		newSphere(
+			newVector(3, 0, 25),
 			1.0,
-			NewMaterial(),
+			newMaterial(),
 		),
-		NewSphere(
-			NewVector(2, 0, 20),
+		newSphere(
+			newVector(2, 0, 20),
 			1.0,
-			NewMaterial(),
+			newMaterial(),
 		),
-		NewSphere(
-			NewVector(1, 0, 15),
+		newSphere(
+			newVector(1, 0, 15),
 			1.0,
-			NewMaterial(),
+			newMaterial(),
 		),
-		NewSphere(
-			NewVector(0, 0, 10),
+		newSphere(
+			newVector(0, 0, 10),
 			1.0,
-			NewMaterial(),
+			newMaterial(),
 		),
-		NewSphere(
-			NewVector(-1, 0, 5),
+		newSphere(
+			newVector(-1, 0, 5),
 			1.0,
-			NewMaterial(),
+			newMaterial(),
 		),
 		&Plane{
-			normal:   NewVector(0, 1, 0),
-			position: NewVector(0, -1, 0),
-			material: NewMaterial(),
+			normal:   newVector(0, 1, 0),
+			position: newVector(0, -1, 0),
+			material: newMaterial(),
 		},
 	}
 	lightSources := []LightSource{
-		NewPointLightSource(1.0, NewVector(-5, 5, -5)),
+		newPointLightSource(1.0, newVector(-5, 5, -5)),
 	}
 	ambientIntensity := 0.1
 
@@ -67,53 +67,53 @@ func NewScene25(size int) *Scene {
 	}
 }
 
-func NewScene27(size int) *Scene {
-	sc := NewScene25(size)
+func newScene27(size int) *Scene {
+	sc := newScene25(size)
 	sc.lightSources = []LightSource{
-		NewPointLightSource(0.5, NewVector(-5, 5, -5)),
-		NewPointLightSource(0.5, NewVector(5, 0, -5)),
-		NewPointLightSource(0.5, NewVector(5, 20, -5)),
+		newPointLightSource(0.5, newVector(-5, 5, -5)),
+		newPointLightSource(0.5, newVector(5, 0, -5)),
+		newPointLightSource(0.5, newVector(5, 20, -5)),
 	}
 	return sc
 }
 
-func NewScene32(size int) *Scene {
+func newScene32(size int) *Scene {
 	// 完全鏡面反射の部屋
 	shapes := []Shape{
 		&Sphere{
-			center:   NewVector(-0.25, -0.5, 3),
+			center:   newVector(-0.25, -0.5, 3),
 			radius:   0.5,
-			material: NewReflectMaterial(),
+			material: newReflectMaterial(),
 		},
 		&Sphere{
-			center:   NewVector(0.80, -0.5, 3),
+			center:   newVector(0.80, -0.5, 3),
 			radius:   0.5,
-			material: NewReflectMaterial(),
+			material: newReflectMaterial(),
 		},
 		&Plane{ // 床
-			material: NewMaterial(),
-			normal:   NewVector(0, 1, 0),
-			position: NewVector(0, -1, 0),
+			material: newMaterial(),
+			normal:   newVector(0, 1, 0),
+			position: newVector(0, -1, 0),
 		},
 		&Plane{ // 天井
-			material: NewMaterial(),
-			normal:   NewVector(0, -1, 0),
-			position: NewVector(0, 1, 0),
+			material: newMaterial(),
+			normal:   newVector(0, -1, 0),
+			position: newVector(0, 1, 0),
 		},
 
 		&Plane{ // 左
-			material: NewMaterial(),
-			normal:   NewVector(1, 0, 0),
-			position: NewVector(-1, 0, 0),
+			material: newMaterial(),
+			normal:   newVector(1, 0, 0),
+			position: newVector(-1, 0, 0),
 		},
 		&Plane{ // 奥
-			material: NewMaterial(),
-			normal:   NewVector(0, 0, -1),
-			position: NewVector(0, 0, 5),
+			material: newMaterial(),
+			normal:   newVector(0, 0, -1),
+			position: newVector(0, 0, 5),
 		},
 	}
 	lightSources := []LightSource{
-		NewPointLightSource(1.0, NewVector(0, 0.9, 2.5)),
+		newPointLightSource(1.0, newVector(0, 0.9, 2.5)),
 	}
 
 	ambientIntensity := 0.1
@@ -126,53 +126,53 @@ func NewScene32(size int) *Scene {
 	}
 }
 
-func NewColoredDiffuseMaterial(k_d *FColor) *Material {
+func newColoredDiffuseMaterial(k_d *fColor) *Material {
 	return &Material{
 		shininess: 8,
-		k_a:       NewFColor(0.1, 0.1, 0.1),
-		k_d:       FCScale(0.7, k_d),
-		k_s:       NewFColor(0, 0, 0),
+		k_a:       newfColor(0.1, 0.1, 0.1),
+		k_d:       fCScale(0.7, k_d),
+		k_s:       newfColor(0, 0, 0),
 		usePerfectReflectance: false,
 		catadioptricFactor:    0.0,
 	}
 }
 
-func NewScene32_2(size int) *Scene {
+func newScene32_2(size int) *Scene {
 	// 完全鏡面反射の部屋
 	shapes := []Shape{
 		&Sphere{
-			center:   NewVector(-0.25, -0.5, 3),
+			center:   newVector(-0.25, -0.5, 3),
 			radius:   0.5,
-			material: NewReflectMaterial(),
+			material: newReflectMaterial(),
 		},
 		&Plane{ // 床
-			material: NewColoredDiffuseMaterial(NewFColor(1, 1, 1)),
-			normal:   NewVector(0, 1, 0),
-			position: NewVector(0, -1, 0),
+			material: newColoredDiffuseMaterial(newfColor(1, 1, 1)),
+			normal:   newVector(0, 1, 0),
+			position: newVector(0, -1, 0),
 		},
 		&Plane{ // 天井
-			material: NewColoredDiffuseMaterial(NewFColor(1, 1, 1)),
-			normal:   NewVector(0, -1, 0),
-			position: NewVector(0, 1, 0),
+			material: newColoredDiffuseMaterial(newfColor(1, 1, 1)),
+			normal:   newVector(0, -1, 0),
+			position: newVector(0, 1, 0),
 		},
 		&Plane{ // 右
-			material: NewColoredDiffuseMaterial(NewFColor(0, 1, 0)),
-			normal:   NewVector(-1, 0, 0),
-			position: NewVector(1, 0, 0),
+			material: newColoredDiffuseMaterial(newfColor(0, 1, 0)),
+			normal:   newVector(-1, 0, 0),
+			position: newVector(1, 0, 0),
 		},
 		&Plane{ // 左
-			material: NewColoredDiffuseMaterial(NewFColor(1, 0, 0)),
-			normal:   NewVector(1, 0, 0),
-			position: NewVector(-1, 0, 0),
+			material: newColoredDiffuseMaterial(newfColor(1, 0, 0)),
+			normal:   newVector(1, 0, 0),
+			position: newVector(-1, 0, 0),
 		},
 		&Plane{ // 奥
-			material: NewColoredDiffuseMaterial(NewFColor(1, 1, 1)),
-			normal:   NewVector(0, 0, -1),
-			position: NewVector(0, 0, 5),
+			material: newColoredDiffuseMaterial(newfColor(1, 1, 1)),
+			normal:   newVector(0, 0, -1),
+			position: newVector(0, 0, 5),
 		},
 	}
 	lightSources := []LightSource{
-		NewPointLightSource(1.0, NewVector(0, 0.9, 2.5)),
+		newPointLightSource(1.0, newVector(0, 0.9, 2.5)),
 	}
 
 	ambientIntensity := 0.1
@@ -185,54 +185,54 @@ func NewScene32_2(size int) *Scene {
 	}
 }
 
-func NewScene33(size int) *Scene {
+func newScene33(size int) *Scene {
 	// 完全鏡面反射の部屋
 	shapes := []Shape{
 		&Sphere{
-			center:   NewVector(-0.4, -0.65, 3),
+			center:   newVector(-0.4, -0.65, 3),
 			radius:   0.35,
-			material: NewReflectMaterial(),
+			material: newReflectMaterial(),
 		},
 		&Sphere{
-			center: NewVector(0.5, -0.65, 2),
+			center: newVector(0.5, -0.65, 2),
 			radius: 0.35,
 			material: &Material{
-				k_a:                NewFColor(0, 0, 0),
-				k_d:                NewFColor(0, 0, 0),
-				k_s:                NewFColor(0, 0, 0),
+				k_a:                newfColor(0, 0, 0),
+				k_d:                newfColor(0, 0, 0),
+				k_s:                newfColor(0, 0, 0),
 				useRefraction:      true,
 				catadioptricFactor: 1.0,
 				refractionIndex:    1.51,
 			},
 		},
 		&Plane{ // 床
-			material: NewColoredDiffuseMaterial(NewFColor(1, 1, 1)),
-			normal:   NewVector(0, 1, 0),
-			position: NewVector(0, -1, 0),
+			material: newColoredDiffuseMaterial(newfColor(1, 1, 1)),
+			normal:   newVector(0, 1, 0),
+			position: newVector(0, -1, 0),
 		},
 		&Plane{ // 天井
-			material: NewColoredDiffuseMaterial(NewFColor(1, 1, 1)),
-			normal:   NewVector(0, -1, 0),
-			position: NewVector(0, 1, 0),
+			material: newColoredDiffuseMaterial(newfColor(1, 1, 1)),
+			normal:   newVector(0, -1, 0),
+			position: newVector(0, 1, 0),
 		},
 		&Plane{ // 右
-			material: NewColoredDiffuseMaterial(NewFColor(0, 1, 0)),
-			normal:   NewVector(-1, 0, 0),
-			position: NewVector(1, 0, 0),
+			material: newColoredDiffuseMaterial(newfColor(0, 1, 0)),
+			normal:   newVector(-1, 0, 0),
+			position: newVector(1, 0, 0),
 		},
 		&Plane{ // 左
-			material: NewColoredDiffuseMaterial(NewFColor(1, 0, 0)),
-			normal:   NewVector(1, 0, 0),
-			position: NewVector(-1, 0, 0),
+			material: newColoredDiffuseMaterial(newfColor(1, 0, 0)),
+			normal:   newVector(1, 0, 0),
+			position: newVector(-1, 0, 0),
 		},
 		&Plane{ // 奥
-			material: NewColoredDiffuseMaterial(NewFColor(1, 1, 1)),
-			normal:   NewVector(0, 0, -1),
-			position: NewVector(0, 0, 5),
+			material: newColoredDiffuseMaterial(newfColor(1, 1, 1)),
+			normal:   newVector(0, 0, -1),
+			position: newVector(0, 0, 5),
 		},
 	}
 	lightSources := []LightSource{
-		NewPointLightSource(1.0, NewVector(0, 0.9, 2.5)),
+		newPointLightSource(1.0, newVector(0, 0.9, 2.5)),
 	}
 
 	ambientIntensity := 0.1
