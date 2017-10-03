@@ -6,7 +6,7 @@ import (
 	"math/rand"
 )
 
-// 物体と光源の集合
+// Scene is set of shapes and lightSources
 type Scene struct {
 	shapes                []Shape
 	lightSources          []LightSource
@@ -71,7 +71,7 @@ func (sc *Scene) testIntersectionWithAll(ray *Ray) (*IntersectionTestResult, boo
 }
 
 func (sc *Scene) testIntersectionWithAllFullParam(ray *Ray, maxDist float64, exitOnceFound bool) (*IntersectionTestResult, bool) {
-	var nearestShape Shape = nil
+	var nearestShape Shape
 	nearestIP := &IntersectionPoint{
 		distance: 1e10,
 		normal:   nil,
@@ -112,7 +112,7 @@ func (sc *Scene) testShadow(lightSource LightSource, ip *IntersectionPoint) bool
 	return found
 }
 
-var backgroundColor *fColor = newfColor(100/255.0, 149/255.0, 237/255.0)
+var backgroundColor = newfColor(100/255.0, 149/255.0, 237/255.0)
 
 func (sc *Scene) rayTrace(ray *Ray) *fColor {
 	return sc.rayTraceRecursive(ray, 0)

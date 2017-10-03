@@ -61,10 +61,10 @@ func (sp *Sphere) testIntersection(ray *Ray) (*IntersectionPoint, bool) {
 			position: i_position,
 			normal:   normal,
 		}, true
-	} else {
-		// 視線ベクトルから逆向き
-		return &IntersectionPoint{}, false
 	}
+
+	// 視線ベクトルから逆向き
+	return &IntersectionPoint{}, false
 }
 
 // Material is a getter method. Need for polymorphism
@@ -86,21 +86,21 @@ func (pl *Plane) testIntersection(ray *Ray) (*IntersectionPoint, bool) {
 	n := pl.normal
 
 	cos := Dot(d, n)
-	if cos == 0 {
+	if cos == 0 { // if the ray is parallel with the plane
 		return nil, false
-	} else {
-		t := Dot(Add(Scale(-1.0, s), pl.position), n) / cos
-
-		if t > 0 {
-			return &IntersectionPoint{
-				distance: t,
-				normal:   n,
-				position: Add(s, Scale(t, d)),
-			}, true
-		} else {
-			return nil, false
-		}
 	}
+
+	t := Dot(Add(Scale(-1.0, s), pl.position), n) / cos
+
+	if t > 0 {
+		return &IntersectionPoint{
+			distance: t,
+			normal:   n,
+			position: Add(s, Scale(t, d)),
+		}, true
+	}
+
+	return nil, false
 }
 
 // Material is getter method
