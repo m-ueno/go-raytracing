@@ -5,27 +5,27 @@ import (
 	"math"
 )
 
-type FColor struct {
+type fColor struct {
 	*Vector
 }
 
-func FCAdd(a, b *FColor) *FColor {
-	return NewFColor(
+func fCAdd(a, b *fColor) *fColor {
+	return newfColor(
 		a.x+b.x,
 		a.y+b.y,
 		a.z+b.z,
 	)
 }
 
-func FCScale(alpha float64, a *FColor) *FColor {
-	return NewFColor(
+func fCScale(alpha float64, a *fColor) *fColor {
+	return newfColor(
 		a.x*alpha,
 		a.y*alpha,
 		a.z*alpha,
 	)
 }
 
-func (fc *FColor) String() string {
+func (fc *fColor) String() string {
 	// r, g, b := fc.x, fc.y, fc.z
 	r := int(math.Min(math.Ceil(fc.x*255), 255))
 	g := int(math.Min(math.Ceil(fc.y*255), 255))
@@ -33,7 +33,7 @@ func (fc *FColor) String() string {
 	return fmt.Sprintf("%d %d %d ", r, g, b)
 }
 
-func NewFColor(r, g, b float64) *FColor {
-	v := NewVector(r, g, b)
-	return &FColor{v}
+func newfColor(r, g, b float64) *fColor {
+	v := newVector(r, g, b)
+	return &fColor{v}
 }

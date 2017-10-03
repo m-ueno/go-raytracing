@@ -8,12 +8,12 @@ type Vector struct {
 	x, y, z float64
 }
 
-func NewVector(x, y, z float64) *Vector {
+func newVector(x, y, z float64) *Vector {
 	return &Vector{x, y, z}
 }
 
 func Add(a, b *Vector) *Vector {
-	return NewVector(
+	return newVector(
 		a.x+b.x,
 		a.y+b.y,
 		a.z+b.z,
@@ -21,7 +21,7 @@ func Add(a, b *Vector) *Vector {
 }
 
 func Sub(a, b *Vector) *Vector {
-	return NewVector(
+	return newVector(
 		a.x-b.x,
 		a.y-b.y,
 		a.z-b.z,
@@ -29,7 +29,7 @@ func Sub(a, b *Vector) *Vector {
 }
 
 func Scale(alpha float64, a *Vector) *Vector {
-	return NewVector(
+	return newVector(
 		alpha*a.x,
 		alpha*a.y,
 		alpha*a.z,

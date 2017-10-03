@@ -15,7 +15,7 @@ type Scene struct {
 	globalRefractionIndex float64 // 大気の絶対屈折率
 }
 
-func NewScene(shapes []Shape, lightSources []LightSource, size int) *Scene {
+func newScene(shapes []Shape, lightSources []LightSource, size int) *Scene {
 	return &Scene{
 		shapes:           shapes,
 		lightSources:     lightSources,
@@ -25,21 +25,21 @@ func NewScene(shapes []Shape, lightSources []LightSource, size int) *Scene {
 	}
 }
 
-func (sc *Scene) shadingAmbient(shape Shape) *FColor {
-	return FCScale(sc.ambientIntensity, shape.Material().k_a)
+func (sc *Scene) shadingAmbient(shape Shape) *fColor {
+	return fCScale(sc.ambientIntensity, shape.Material().k_a)
 }
 
 func (sc *Scene) shadingDiffuse(
 	ip *IntersectionPoint,
 	lightSource LightSource,
-	shape Shape) *FColor {
-	lighting := lightSource.LightingAt(ip.position)
+	shape Shape) *fColor {
+	lighting := lightSource.lightingAt(ip.position)
 	k_d := shape.Material().k_d
 
 	v_n := ip.normal
 	v_l := Scale(-1.0, lighting.direction)
 	dot := math.Max(0, Dot(v_l, v_n))
-	r_d := FCScale(dot*lighting.intensity, k_d)
+	r_d := fCScale(dot*lighting.intensity, k_d)
 
 	return r_d
 }
@@ -48,9 +48,9 @@ func (sc *Scene) shadingSpecular(
 	ip *IntersectionPoint,
 	lightSource LightSource,
 	ray *Ray,
-	shape Shape) *FColor {
+	shape Shape) *fColor {
 
-	lighting := lightSource.LightingAt(ip.position)
+	lighting := lightSource.lightingAt(ip.position)
 	k_s := shape.Material().k_s
 	v_n := ip.normal
 	v_l := Scale(-1.0, lighting.direction)
@@ -61,7 +61,7 @@ func (sc *Scene) shadingSpecular(
 	// vR = 2 * cos * vN - vL
 
 	dot := math.Max(Dot(v_v, v_r), 0.0)
-	r_s := FCScale(lighting.intensity*math.Pow(dot, shape.Material().shininess), k_s)
+	r_s := fCScale(lighting.intensity*math.Pow(dot, shape.Material().shininess), k_s)
 
 	return r_s
 }
@@ -100,7 +100,7 @@ func (sc *Scene) testIntersectionWithAllFullParam(ray *Ray, maxDist float64, exi
 }
 
 func (sc *Scene) testShadow(lightSource LightSource, ip *IntersectionPoint) bool {
-	lighting := lightSource.LightingAt(ip.position)
+	lighting := lightSource.lightingAt(ip.position)
 	v_l := Scale(-1.0, lighting.direction)
 	shadowRay := &Ray{
 		direction: v_l,
@@ -112,13 +112,13 @@ func (sc *Scene) testShadow(lightSource LightSource, ip *IntersectionPoint) bool
 	return found
 }
 
-var backgroundColor *FColor = NewFColor(100/255.0, 149/255.0, 237/255.0)
+var backgroundColor *fColor = newfColor(100/255.0, 149/255.0, 237/255.0)
 
-func (sc *Scene) rayTrace(ray *Ray) *FColor {
+func (sc *Scene) rayTrace(ray *Ray) *fColor {
 	return sc.rayTraceRecursive(ray, 0)
 }
 
-func (sc *Scene) rayTraceRecursive(ray *Ray, recLevel int) *FColor {
+func (sc *Scene) rayTraceRecursive(ray *Ray, recLevel int) *fColor {
 	if recLevel > 10 {
 		return nil // 交差なし
 	}
@@ -138,8 +138,8 @@ func (sc *Scene) rayTraceRecursive(ray *Ray, recLevel int) *FColor {
 			if sc.testShadow(ls, ip) {
 				continue
 			}
-			fcolor = FCAdd(fcolor, sc.shadingDiffuse(ip, ls, shape))
-			fcolor = FCAdd(fcolor, sc.shadingSpecular(ip, ls, ray, shape))
+			fcolor = fCAdd(fcolor, sc.shadingDiffuse(ip, ls, shape))
+			fcolor = fCAdd(fcolor, sc.shadingSpecular(ip, ls, ray, shape))
 		}
 
 		// 完全鏡面反射
@@ -156,7 +156,7 @@ func (sc *Scene) rayTraceRecursive(ray *Ray, recLevel int) *FColor {
 
 				r_reOrNil := sc.rayTraceRecursive(reRay, recLevel+1)
 				if r_reOrNil != nil {
-					fcolor = FCAdd(fcolor, FCScale(mat.catadioptricFactor, r_reOrNil))
+					fcolor = fCAdd(fcolor, fCScale(mat.catadioptricFactor, r_reOrNil))
 				}
 			}
 		}
@@ -200,11 +200,11 @@ func (sc *Scene) rayTraceRecursive(ray *Ray, recLevel int) *FColor {
 
 			reROrNil := sc.rayTraceRecursive(reRay, recLevel+1) // 完全鏡面反射光の放射輝度
 			if reROrNil != nil {
-				fcolor = FCAdd(fcolor, FCScale(cR*mat.catadioptricFactor, reROrNil))
+				fcolor = fCAdd(fcolor, fCScale(cR*mat.catadioptricFactor, reROrNil))
 			}
 			feROrNil := sc.rayTraceRecursive(feRay, recLevel+1) // 屈折光の放射輝度
 			if feROrNil != nil {
-				fcolor = FCAdd(fcolor, FCScale(cT*mat.catadioptricFactor, feROrNil))
+				fcolor = fCAdd(fcolor, fCScale(cT*mat.catadioptricFactor, feROrNil))
 			}
 		}
 	}
@@ -218,30 +218,30 @@ func (sc *Scene) renderHead() {
 
 func (sc *Scene) render(antialiasing bool) {
 	size := sc.size
-	from := NewVector(0, 0, -5)
+	from := newVector(0, 0, -5)
 
 	sc.renderHead()
 
 	for y := 0; y < size; y++ {
 		for x := 0; x < size; x++ {
-			fcolor := NewFColor(0, 0, 0)
+			fcolor := newfColor(0, 0, 0)
 
 			if antialiasing {
-				fcolorAcc := NewFColor(0, 0, 0)
+				fcolorAcc := newfColor(0, 0, 0)
 				nSample := 10
 
 				for s := 0; s < nSample; s++ {
 					screenXYZ := makeEyeWithSampling(x, y, size, rand.Float64(), rand.Float64())
 					to := Normalize(Sub(screenXYZ, from))
-					ray := NewRay(from, to)
+					ray := newRay(from, to)
 
-					fcolorAcc = FCAdd(fcolorAcc, sc.rayTrace(ray))
+					fcolorAcc = fCAdd(fcolorAcc, sc.rayTrace(ray))
 				}
-				fcolor = FCScale(1.0/float64(nSample), fcolorAcc)
+				fcolor = fCScale(1.0/float64(nSample), fcolorAcc)
 			} else {
 				screenXYZ := makeEye(x, y, size)
 				to := Normalize(Sub(screenXYZ, from))
-				ray := NewRay(from, to)
+				ray := newRay(from, to)
 
 				fcolor = sc.rayTrace(ray)
 			}

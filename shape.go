@@ -19,7 +19,7 @@ type Plane struct {
 	material *Material
 }
 
-func NewSphere(center *Vector, radius float64, material *Material) *Sphere {
+func newSphere(center *Vector, radius float64, material *Material) *Sphere {
 	return &Sphere{center, radius, material}
 }
 
@@ -69,7 +69,7 @@ func (sp *Sphere) Material() *Material {
 	return sp.material
 }
 
-func NewPlane(normal, position *Vector, material *Material) *Plane {
+func newPlane(normal, position *Vector, material *Material) *Plane {
 	return &Plane{
 		normal:   normal,
 		position: position,

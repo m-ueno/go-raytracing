@@ -7,7 +7,7 @@ type Lighting struct {
 }
 
 type LightSource interface {
-	LightingAt(*Vector) *Lighting
+	lightingAt(*Vector) *Lighting
 }
 
 type PointLightSource struct {
@@ -15,7 +15,7 @@ type PointLightSource struct {
 	position  *Vector
 }
 
-func NewLighting(direction *Vector, distance float64, intensity float64) *Lighting {
+func newLighting(direction *Vector, distance float64, intensity float64) *Lighting {
 	return &Lighting{
 		direction: direction,
 		distance:  distance,
@@ -23,15 +23,15 @@ func NewLighting(direction *Vector, distance float64, intensity float64) *Lighti
 	}
 }
 
-func NewPointLightSource(intensity float64, position *Vector) *PointLightSource {
+func newPointLightSource(intensity float64, position *Vector) *PointLightSource {
 	return &PointLightSource{
 		intensity: intensity,
 		position: position,
 	}
 }
 
-func (pls *PointLightSource) LightingAt(p *Vector) *Lighting {
-	return NewLighting(
+func (pls *PointLightSource) lightingAt(p *Vector) *Lighting {
+	return newLighting(
 		Normalize(Sub(p, pls.position)),
 		Norm(Sub(p, pls.position)),
 		pls.intensity,

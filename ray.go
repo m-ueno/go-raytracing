@@ -5,6 +5,6 @@ type Ray struct {
 	direction *Vector
 }
 
-func NewRay(start, direction *Vector) *Ray {
+func newRay(start, direction *Vector) *Ray {
 	return &Ray{start, direction}
 }

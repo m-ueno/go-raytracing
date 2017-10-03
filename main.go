@@ -21,7 +21,7 @@ func main() {
 	log.Println("antialiasing:", *antialiasing)
 	log.Println("size:", *size)
 
-	scene := NewScene33(*size)
+	scene := newScene33(*size)
 	scene.render(*antialiasing)
 
 	log.Println("end")
@@ -43,7 +43,7 @@ func makeEye(x int, y int, imageSize int) *Vector {
 }
 
 func makeEyeWithSampling(x, y int, imageSize int, dx, dy float64) *Vector {
-	return NewVector(
+	return newVector(
 		-1.0+(float64(x)+dx)/float64(imageSize)*2,
 		1.0-(float64(y)+dy)/float64(imageSize)*2,
 		0.0,
