@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"os"
 )
 
 // Scene is set of shapes and lightSources
@@ -212,15 +213,15 @@ func (sc *Scene) rayTraceRecursive(ray *Ray, recLevel int) *fColor {
 	return fcolor
 }
 
-func (sc *Scene) renderHead() {
-	fmt.Printf("P3\n%d %d\n255\n", sc.size, sc.size)
+func (sc *Scene) renderHead(f *os.File) {
+	f.WriteString(fmt.Sprintf("P3\n%d %d\n255\n", sc.size, sc.size))
 }
 
-func (sc *Scene) render(antialiasing bool) {
+func (sc *Scene) render(antialiasing bool, f *os.File) {
 	size := sc.size
 	from := newVector(0, 0, -5)
 
-	sc.renderHead()
+	sc.renderHead(f)
 
 	for y := 0; y < size; y++ {
 		for x := 0; x < size; x++ {
@@ -246,7 +247,7 @@ func (sc *Scene) render(antialiasing bool) {
 				fcolor = sc.rayTrace(ray)
 			}
 
-			fmt.Print(fcolor)
+			f.WriteString(fmt.Sprint(fcolor))
 		}
 	}
 }
