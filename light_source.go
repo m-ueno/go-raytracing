@@ -1,4 +1,4 @@
-package main
+package raytracing
 
 // Lighting produce light ray
 type Lighting struct {

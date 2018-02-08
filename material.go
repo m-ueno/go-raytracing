@@ -1,4 +1,4 @@
-package main
+package raytracing
 
 // Material is reflection information
 type Material struct {

@@ -1,4 +1,4 @@
-package main
+package raytracing
 
 func newScene24(size int) *Scene {
 	shapes := []Shape{
@@ -185,7 +185,7 @@ func newScene32_2(size int) *Scene {
 	}
 }
 
-func newScene33(size int) *Scene {
+func NewScene33(size int) *Scene {
 	// 完全鏡面反射の部屋
 	shapes := []Shape{
 		&Sphere{

@@ -1,4 +1,4 @@
-package main
+package raytracing
 
 // Ray is half line
 type Ray struct {

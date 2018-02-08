@@ -4,10 +4,9 @@ import (
 	"flag"
 	"log"
 	"os"
-)
 
-// EPSILON is used to calcurate reflection
-const EPSILON = 1.0 / 128
+	. "github.com/m-ueno/raytracing"
+)
 
 func main() {
 	var antialiasing = flag.Bool("aa", false, "Enable antialiasing (slow)")
@@ -37,34 +36,8 @@ func main() {
 	}
 	defer f.Close()
 
-	scene := newScene33(*size)
-	scene.render(*antialiasing, f)
+	scene := NewScene33(*size)
+	scene.Render(*antialiasing, f)
 
 	log.Println("end")
-}
-
-// IntersectionPoint is a point where sight vector intersect surface
-type IntersectionPoint struct {
-	distance float64
-	position *Vector
-	normal   *Vector
-}
-
-// IntersectionTestResult is returned by testIntersectionWithAll()
-// intersectionPoint is nil when no intersection found
-type IntersectionTestResult struct {
-	intersectionPoint *IntersectionPoint
-	shape             Shape
-}
-
-func makeEye(x int, y int, imageSize int) *Vector {
-	return makeEyeWithSampling(x, y, imageSize, 0, 0)
-}
-
-func makeEyeWithSampling(x, y int, imageSize int, dx, dy float64) *Vector {
-	return newVector(
-		-1.0+(float64(x)+dx)/float64(imageSize)*2,
-		1.0-(float64(y)+dy)/float64(imageSize)*2,
-		0.0,
-	)
 }
